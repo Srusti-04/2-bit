@@ -1,0 +1,99 @@
+module alu_2bit(
+input [1:0] A,
+input [1:0] B,
+input [2:0] sel,
+output reg [1:0] result,
+output reg carry
+);
+
+always @(*)
+begin
+
+case(sel)
+
+3'b000: begin
+{carry,result} = A + B;      // Addition
+end
+
+3'b001: begin
+{carry,result} = A - B;      // Subtraction
+end
+
+3'b010: begin
+result = A & B;              // AND
+carry = 0;
+end
+
+3'b011: begin
+result = A | B;              // OR
+carry = 0;
+end
+
+3'b100: begin
+result = A ^ B;              // XOR
+carry = 0;
+end
+
+default: begin
+result = 2'b00;
+carry = 0;
+end
+
+endcase
+
+end
+
+endmodule
+
+
+
+`timescale 1ns/1ps
+
+module testbench;
+
+reg [1:0] A;
+reg [1:0] B;
+reg [2:0] sel;
+
+wire [1:0] result;
+wire carry;
+
+alu_2bit uut(
+.A(A),
+.B(B),
+.sel(sel),
+.result(result),
+.carry(carry)
+);
+
+initial
+begin
+
+$dumpfile("dump.vcd");
+$dumpvars(0,testbench);
+
+// ADD
+A = 2'b01; B = 2'b10; sel = 3'b000;
+#10;
+
+// SUB
+A = 2'b11; B = 2'b01; sel = 3'b001;
+#10;
+
+// AND
+A = 2'b10; B = 2'b01; sel = 3'b010;
+#10;
+
+// OR
+A = 2'b10; B = 2'b01; sel = 3'b011;
+#10;
+
+// XOR
+A = 2'b11; B = 2'b01; sel = 3'b100;
+#10;
+
+$finish;
+
+end
+
+endmodule
